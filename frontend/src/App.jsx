@@ -6,9 +6,29 @@ function App() {
   const [role, setRole] = useState('student')
 const [leaveRequests, setLeaveRequests] = useState([])
   function handleLogin(event) {
-    event.preventDefault()
+  event.preventDefault()
+
+  const email = event.currentTarget.querySelector(
+    'input[type="email"]'
+  ).value.trim()
+
+  const password = event.currentTarget.querySelector(
+    'input[type="password"]'
+  ).value
+
+  if (role === 'faculty') {
+    if (
+      email === 'faculty@college.com' &&
+      password === 'Faculty@123'
+    ) {
+      setPage('faculty-dashboard')
+    } else {
+      alert('Invalid Faculty Email or Password')
+    }
+  } else {
     setPage('dashboard')
   }
+}
 function handleLeaveSubmit(event) {
   event.preventDefault()
 
@@ -163,6 +183,50 @@ function handleLeaveSubmit(event) {
 
     <button onClick={() => setPage('dashboard')}>
       Back to Dashboard
+    </button>
+  </section>
+)}
+{page === 'faculty-dashboard' && (
+  <section className="hero">
+    <h1>Faculty Dashboard</h1>
+    <h2>Student Leave Requests</h2>
+
+    {leaveRequests.length === 0 ? (
+      <p>No Leave Requests Available</p>
+    ) : (
+      leaveRequests.map((request, index) => (
+        <div key={index} className="login-form">
+          <h3>Leave Request {index + 1}</h3>
+
+          {Object.entries(request).map(([key, value]) => (
+            <p key={key}>
+              <strong>{key}:</strong> {String(value)}
+            </p>
+          ))}
+
+          <h3>Status: {request.status || 'Pending'}</h3>
+
+          <button onClick={() =>
+            setLeaveRequests(prev => prev.map((item, i) =>
+              i === index ? {...item, status: 'Approved'} : item
+            ))
+          }>
+            Approve
+          </button>
+
+          <button onClick={() =>
+            setLeaveRequests(prev => prev.map((item, i) =>
+              i === index ? {...item, status: 'Rejected'} : item
+            ))
+          }>
+            Reject
+          </button>
+        </div>
+      ))
+    )}
+
+    <button onClick={() => setPage('home')}>
+      Logout
     </button>
   </section>
 )}
